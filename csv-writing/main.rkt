@@ -14,7 +14,7 @@
   (and (list? t)
        (andmap list? t)))
 
-(struct csv-printer-params
+(struct csv-printing-params
   (table-cell->string
    string-cell->string
    number-cell->string
@@ -23,7 +23,7 @@
    quotes-only-when-needed?
    quoted-double-quote))
 
-(define (make-csv-printer-params
+(define (make-csv-printing-params
          #:table-cell->string [a default-table-cell->string]
          #:string-cell->string [b default-string-cell->string]
          #:number-cell->string [c default-number-cell->string]
@@ -31,7 +31,7 @@
          #:symbol-cell->string [e default-symbol-cell->string]
          #:quotes-only-when-needed? [f #t]
          #:quoted-double-quote [g "\"\""])
-  (csv-printer-params
+  (csv-printing-params
    a b c d e f g))
 
 
@@ -108,7 +108,7 @@
                             #:printer-params
                             [printer-params
                              default-csv-printer-params])
-  ((csv-printer-params-table-cell->string
+  ((csv-printing-params-table-cell->string
     default-csv-printer-params)
    cell))
 
@@ -117,16 +117,16 @@
                             default-csv-printer-params]
           )
   (cond [(string? cell)
-         ((csv-printer-params-string-cell->string
+         ((csv-printing-params-string-cell->string
            default-csv-printer-params) cell)]
         [(number? cell)
-         ((csv-printer-params-number-cell->string
+         ((csv-printing-params-number-cell->string
            default-csv-printer-params) cell)]
         [(boolean? cell)
-         ((csv-printer-params-boolean-cell->string
+         ((csv-printing-params-boolean-cell->string
            default-csv-printer-params) cell)]
         [(symbol? cell)
-         ((csv-printer-params-symbol-cell->string
+         ((csv-printing-params-symbol-cell->string
            default-csv-printer-params) cell)]
         [else
          (raise-argument-error 'default-table-cell->string
@@ -143,14 +143,14 @@
                           "string"
                           0 str))
   (cond [(and (has-no-danger-chars? str)
-              (csv-printer-params-quotes-only-when-needed?
+              (csv-printing-params-quotes-only-when-needed?
                printer-params))
          str]
         [else
          (string-append
           "\""
           (regexp-replace #px"\"" str
-                          (csv-printer-params-quoted-double-quote
+                          (csv-printing-params-quoted-double-quote
                            printer-params))
           "\"")]))
 
@@ -189,7 +189,7 @@
 
 
 (define default-csv-printer-params
-  (make-csv-printer-params))
+  (make-csv-printing-params))
 
 (module+ test
   (require rackunit)
@@ -203,13 +203,13 @@
                 "abcdef")
   (check-equal? (default-string-cell->string "abc\"def"
                   #:printer-params
-                  (make-csv-printer-params
+                  (make-csv-printing-params
                    #:quoted-double-quote "##"))
                 "\"abc##def\"")
 
   (check-equal? (default-string-cell->string "abcdef"
                   #:printer-params
-                  (make-csv-printer-params
+                  (make-csv-printing-params
                    #:quotes-only-when-needed? #f))
                 "\"abcdef\"")
   
