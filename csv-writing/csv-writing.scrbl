@@ -17,7 +17,7 @@ At the same time, it does provide a number of simple parameters that
 you can adjust in order to customize the less-well-agreed-upon
 aspects of serialization. One obvious design question is how to
 allow you to specify values for these parameters without decorating
-every function with a raft of optional parameters. I haven't found
+every procedure with a raft of optional parameters. I haven't found
 a completely satisfactory answer, but—in somewhat the style of
 Neil Van Dyke's csv-reading library—you get a reasonable default,
 and a way to specify a printing-parameters structure that customizes
@@ -32,7 +32,7 @@ or all values, in order to address this in whatever style makes sense
 for their particular application.
 
 @defmodule[csv-writing]{
-  The @racket[csv-writing] module provides all of the functions
+  The @racket[csv-writing] module provides all of the procedures
       defined in the library.
 
 }
@@ -71,7 +71,7 @@ margo,sign-painter,34}
 
  as output.
 
- The documentation of the @racket[csv-printing-params] structure
+ The documentation of the @racket[make-csv-printing-params] procedure
  provides information on how to customize the printing.
 }
 
@@ -116,9 +116,9 @@ margo,sign-painter,34}
           [#:quoted-double-quote quoted-double-quote string? "\"\""]
           )
          csv-printing-params?]{
- This function is a convenience function to simplify the specification of
+ This procedure is a convenience procedure to simplify the specification of
  custom printing parameters. All of its keyword arguments are set by default
- to the default values, so overriding just one function can be done without
+ to the default values, so overriding just one procedure can be done without
  specifying all of the other parameters.
 
  The @racket[table-cell->string] procedure controls the translation of
@@ -149,7 +149,7 @@ X,X}
  default procedures to get the heck out of the way.
 
  The @racket[string-cell->string] procedure is called by the default
- @racket[table-cell->string] function to map strings
+ @racket[table-cell->string] procedure to map strings
  to CSV values. So, for instance:
 
   @codeblock|{
