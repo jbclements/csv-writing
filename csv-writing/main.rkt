@@ -11,8 +11,8 @@
 
 ;; a table is a list of lists, that's all.
 (define (table? t)
-  (cond [(andmap list? t) #t]
-        [else #f]))
+  (and (list? t)
+       (andmap list? t)))
 
 (struct csv-printer-params
   (table-cell->string
@@ -206,6 +206,13 @@
                   (make-csv-printer-params
                    #:quoted-double-quote "##"))
                 "\"abc##def\"")
+
+  (check-equal? (default-string-cell->string "abcdef"
+                  #:printer-params
+                  (make-csv-printer-params
+                   #:quotes-only-when-needed? #f))
+                "\"abcdef\"")
+  
   (check-equal? (default-number-cell->string 234)
                 "234")
   (check-equal? (default-number-cell->string 3/2)
@@ -243,9 +250,16 @@ margo,sign-painter,34\n"))
     (define op2 (open-output-string))
     (display-table '((name title)
                      ("joey" bottle-washer)
-                     ("margo" sign-painter 34))
+                     ("margo" sign-painter 34 #f))
                    op2)
     (check-equal? (get-output-string op2)
                   "name,title
 joey,bottle-washer
-margo,sign-painter,34\n")))
+margo,sign-painter,34,FALSE\n"))
+
+  (check-equal? (table? '()) #t)
+  (check-equal? (table? 14) #f)
+  (check-equal? (table? '((3 4) (4 5 6 "hamburger"))) #t)
+  (check-equal? (table? (list (list (void)))) #t)
+
+  )
