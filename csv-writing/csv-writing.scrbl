@@ -101,7 +101,7 @@ margo,sign-painter,34}
 }
 
 @defproc[(table-cell->string [cell any?]
-                             [#:printing-params printing-params csv-printing-params? default-csv-printing-params])
+                             [printing-params csv-printing-params? default-csv-printing-params])
          string?]{
  given a value, return its representation as a CSV cell (string).
 }
@@ -128,7 +128,7 @@ margo,sign-painter,34}
   (display-table '((a b) (c d))
                  #:printing-params
                  (make-csv-printing-params
-                  #:table-cell->string (λ (x) "X")))}|
+                  #:table-cell->string (λ (str) "X")))}|
 
  This produces the output
 
@@ -169,6 +169,7 @@ DC,2
  to themselves, unless they contain newlines, commas, or double-quotes,
  in which case it wraps them in double-quotes, and quotes
  double-quotes using the default quoted-double-quote.
+ 
 
  The @racket[quotes-only-when-needed?] parameter is true by
  default; if set to false, then all strings are wrapped in
