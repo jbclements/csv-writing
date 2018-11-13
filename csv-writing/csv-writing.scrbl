@@ -31,10 +31,10 @@ specify custom procedures for the printing of booleans, symbols, strings,
 or all values, in order to address this in whatever style makes sense
 for their particular application.
 
-@subsection{TSV files}
 
-In fact, you can use this package to display TSV files as well. See below
+@emph{NOTE:} In fact, you can use this package to display TSV files as well. See below
 for an example.
+
 
 @defmodule[csv-writing]{
   The @racket[csv-writing] module provides all of the procedures
@@ -217,7 +217,7 @@ DC,2
  you'll get a TSV instead. Here's an example, using a replacement
  string conversion that's perhaps more typical for a TSV file:
 
- @code|{
+ @codeblock|{
 ;; strings with tabs cause errors, others are passed unchanged
 (define (tsv-string-converter str)
   (match str
