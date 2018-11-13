@@ -31,6 +31,11 @@ specify custom procedures for the printing of booleans, symbols, strings,
 or all values, in order to address this in whatever style makes sense
 for their particular application.
 
+@subsection{TSV files}
+
+In fact, you can use this package to display TSV files as well. See below
+for an example.
+
 @defmodule[csv-writing]{
   The @racket[csv-writing] module provides all of the procedures
       defined in the library.
@@ -114,6 +119,7 @@ margo,sign-painter,34}
           [#:symbol-cell->string symbol-cell->string procedure? default-symbol-cell->string]
           [#:quotes-only-when-needed? quotes-only-when-needed? boolean? #t]
           [#:quoted-double-quote quoted-double-quote string? "\"\""]
+          [#:column-separator column-separator ","]
           )
          csv-printing-params?]{
  This procedure is a convenience procedure to simplify the specification of
@@ -204,6 +210,28 @@ DC,2
  to effect the translation of booleans to CSV cells.
  By default, it produces @racket["TRUE"]
  and @racket["FALSE"].
+
+ The @racket[column-separator] string is used to separate columns.
+ Typically, for a CSV file, this is the string @racket[","] (hence
+ the name "comma"-separated....) If you supply a tab character,
+ you'll get a TSV instead. Here's an example, using a replacement
+ string conversion that's perhaps more typical for a TSV file:
+
+ @code|{
+;; strings with tabs cause errors, others are passed unchanged
+(define (tsv-string-converter str)
+  (match str
+    [(regexp #px"\t")
+     (error 'tsv-string-converter "no tabs allowed: ~e" str)]
+    [other str]))
+
+(table->string
+ '(("a" "b" 14) ("c" "d e" 278))
+ #:printing-params
+ (make-csv-printing-params
+  #:string-cell->string tsv-string-converter
+  #:column-separator "\t"))
+  }|
 
 }
 

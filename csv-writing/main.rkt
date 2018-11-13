@@ -24,7 +24,8 @@
    boolean-cell->string
    symbol-cell->string
    quotes-only-when-needed?
-   quoted-double-quote))
+   quoted-double-quote
+   column-separator))
 
 (define (make-csv-printing-params
          #:table-cell->string [a #f]
@@ -33,7 +34,26 @@
          #:boolean-cell->string [d default-boolean-cell->string]
          #:symbol-cell->string [e default-symbol-cell->string]
          #:quotes-only-when-needed? [f #t]
-         #:quoted-double-quote [g "\"\""])
+         #:quoted-double-quote [g "\"\""]
+         #:column-separator [h ","])
+  (define contracts
+    (append
+     (for/list ([i (in-range 2)])
+       (cons (or/c false? procedure?) "procedure"))
+     (for/list ([i (in-range 3)])
+       (cons procedure? "procedure"))
+     (list (cons boolean? "boolean")
+           (cons string? "string")
+           (cons string? "string"))))
+  (define args (list a b c d e f g h))
+  (for/list ([i             (in-naturals)]
+             [checker-tuple (in-list contracts)]
+             [arg           (in-list args)])
+    (unless ((car checker-tuple) arg)
+      (apply raise-argument-error
+             'make-csv-printing-params
+             (cdr checker-tuple)
+             i args)))
   (csv-printing-params
    ;; this funny dance is required because
    ;; the user-supplied functions don't get the
@@ -42,8 +62,7 @@
          [else default-table-cell->string])
    (cond [b (λ (str pp) (b str))]
          [else default-string-cell->string])
-   c d e f g))
-
+   c d e f g h))
 
 ;; given a table and a port, write the table as a CSV to the port
 (define (display-table t [port (current-output-port)]
@@ -127,7 +146,7 @@
    (add-between
     (for/list ([cell (in-list row)])
       (table-cell->string cell printing-params))
-    ",")))
+    (csv-printing-params-column-separator printing-params))))
 
 ;; given a single cell, return the cell as a string
 (define (table-cell->string cell
@@ -197,6 +216,14 @@
 ;; again, symbols are just going to collide hard with strings.
 (define (default-symbol-cell->string sym)
   (default-string-cell->string (symbol->string sym)))
+
+;; cheap or/c imitation:
+(define (or/c a b)
+  (λ (v) (or (a v) (b v))))
+
+;; oops, need false?
+(define (false? v)
+  (equal? v #f))
 
 
 (define default-csv-printing-params
