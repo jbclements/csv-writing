@@ -187,9 +187,9 @@
         [else
          (string-append
           "\""
-          (regexp-replace #px"\"" str
-                          (csv-printing-params-quoted-double-quote
-                           printing-params))
+          (regexp-replace* #px"\"" str
+                           (csv-printing-params-quoted-double-quote
+                            printing-params))
           "\"")]))
 
 (define (has-no-danger-chars? str)
@@ -237,6 +237,8 @@
   (check-equal? (has-no-danger-chars? "a\nbcdef") #f)
   (check-equal? (default-string-cell->string "abc\"def")
                 "\"abc\"\"def\"")
+  (check-equal? (default-string-cell->string "abc\"de\"f")
+                "\"abc\"\"de\"\"f\"")
   (check-equal? (default-string-cell->string "abcdef")
                 "abcdef")
   (check-equal? (default-string-cell->string "abc\"def"
