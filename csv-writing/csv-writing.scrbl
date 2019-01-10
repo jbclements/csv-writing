@@ -214,25 +214,44 @@ DC,2
  The @racket[column-separator] string is used to separate columns.
  Typically, for a CSV file, this is the string @racket[","] (hence
  the name "comma"-separated....) If you supply a tab character,
- you'll get a TSV instead. Here's an example, using a replacement
- string conversion that's perhaps more typical for a TSV file:
+ you'll get a TSV instead. In fact, you might just want to use
+ @racket[default-tsv-printing-params].
 
+}
+
+@defproc[(csv-printing-params? [v Any]) Boolean]{
+ Returns @racket[#t] if this value was created by @racket[make-csv-printing-params].
+}
+
+@defthing[default-tsv-printing-params csv-printing-params?]{
+
+ A @racket[csv-printing-params?] that allows printing of TSV files, provided
+ for convenience. Here's its definition:
+  
  @codeblock|{
+(define default-tsv-printing-params
+  (make-csv-printing-params
+   #:string-cell->string tsv-string-converter
+   #:column-separator "\t"))
+
 ;; strings with tabs cause errors, others are passed unchanged
 (define (tsv-string-converter str)
   (match str
     [(regexp #px"\t")
      (error 'tsv-string-converter "no tabs allowed: ~e" str)]
     [other str]))
+}|
 
+ Here's an example of using it:
+
+ @codeblock|{
 (table->string
  '(("a" "b" 14) ("c" "d e" 278))
- #:printing-params
- (make-csv-printing-params
-  #:string-cell->string tsv-string-converter
-  #:column-separator "\t"))
-  }|
+ #:printing-params default-tsv-printing-params)
+}|
 
+ Note that it's entirely possible that you'll want to customize this, for instance
+ by providing a special mapping for @racket[sql-null?] or other values.
 }
 
 @section{Suggestions Etc.}

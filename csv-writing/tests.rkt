@@ -72,20 +72,10 @@ margo,sign-painter,34,FALSE\n"))
   (check-equal? (table? (list (list (void)))) #t)
 
   ;; how about TSVs?
-
-  ;; strings with tabs cause errors, others are passed unchanged
-  (define (tsv-string-converter str)
-    (match str
-      [(regexp #px"\t")
-       (error 'tsv-string-converter "no tabs allowed: ~e" str)]
-      [other str]))
-  
   (check-equal? (table->string
                  '(("a" "b") ("c" "d e"))
                  #:printing-params
-                 (make-csv-printing-params
-                  #:string-cell->string tsv-string-converter
-                  #:column-separator "\t"))
+                 default-tsv-printing-params)
                 "a\tb\nc\td e")
 
 
@@ -119,6 +109,10 @@ margo,sign-painter,34,FALSE\n"))
   (check-exn #px"expected: procedure"
              (λ () (make-csv-printing-params #:string-cell->string 'abc)))
 
+  (check-exn #px"expected string with no tabs"
+             (λ () (table-row->string '("a" "b\tc")
+                                      #:printing-params
+                                      default-tsv-printing-params)))
   )
 
 

@@ -7,7 +7,8 @@
          table-row->string
          table-cell->string
          (struct-out csv-printing-params)
-         make-csv-printing-params)
+         make-csv-printing-params
+         default-tsv-printing-params)
 
 (require (only-in racket/list add-between)
          (only-in racket/format ~r))
@@ -228,6 +229,19 @@
 
 (define default-csv-printing-params
   (make-csv-printing-params))
+
+;; strings with tabs cause errors, others are passed unchanged
+(define (tsv-string-converter str)
+  (cond
+    [(regexp-match? #px"\t" str)
+     (error 'tsv-string-converter "expected string with no tabs, got: ~e" str)]
+    [else str]))
+
+;; a simple set of tsv-printing-params
+(define default-tsv-printing-params
+  (make-csv-printing-params
+   #:string-cell->string tsv-string-converter
+   #:column-separator "\t"))
 
 (module+ test
   (require rackunit)
