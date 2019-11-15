@@ -180,11 +180,13 @@ DC,2
  The @racket[quotes-only-when-needed?] parameter is true by
  default; if set to false, then all strings are wrapped in
  double-quotes, regardless of whether they contain dangerous
- characters.
+ characters. This parameter is ignored if you provide your
+ own @racket[string-cell->string] procedure.
 
  The @racket[quoted-double-quote] parameter is the string that
  is used in place of a double-quote that appears in a table
- cell.
+ cell. This parameter is ignored if you provide your
+ own @racket[string-cell->string] procedure.
 
  The @racket[number-cell->string] procedure is called by the
  default @racket[table-cell->string] procedure to effect the translation
