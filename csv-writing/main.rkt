@@ -37,6 +37,18 @@
          #:quotes-only-when-needed? [f #t]
          #:quoted-double-quote [g "\"\""]
          #:column-separator [h ","])
+  (when (and (or a b) (not f))
+    (error
+     "quotes-only-when-needed? has no effect when using a custom string-cell->string"))
+  (when (and (or a b) (not (equal? g "\"\"")))
+    (error
+     "setting quoted-double-quote has no effect when using a custom string-cell->string"))
+  (when (and a (or b
+                   (not (equal? c default-number-cell->string))
+                   (not (equal? d default-boolean-cell->string))
+                   (not (equal? e default-symbol-cell->string))))
+    (error
+     "setting a type-specific converter has no effect when using a custom table-cell->string"))
   (define contracts
     (append
      (for/list ([i (in-range 2)])

@@ -113,6 +113,28 @@ margo,sign-painter,34,FALSE\n"))
              (λ () (table-row->string '("a" "b\tc")
                                       #:printing-params
                                       default-tsv-printing-params)))
+
+  (check-exn #px"has no effect"
+             (λ () (make-csv-printing-params #:string-cell->string (λ (x) x)
+                                             #:quotes-only-when-needed? #f)))
+  (check-exn #px"has no effect"
+             (λ () (make-csv-printing-params #:table-cell->string (λ (x) x)
+                                             #:quotes-only-when-needed? #f)))
+  (check-exn #px"has no effect"
+             (λ () (make-csv-printing-params #:string-cell->string (λ (x) x)
+                                             #:quoted-double-quote "zz")))
+  (check-exn #px"has no effect"
+             (λ () (make-csv-printing-params #:table-cell->string (λ (x) x)
+                                             #:string-cell->string (λ (x) x))))
+  (check-exn #px"has no effect"
+             (λ () (make-csv-printing-params #:table-cell->string (λ (x) x)
+                                             #:number-cell->string (λ (x) x))))
+  (check-exn #px"has no effect"
+             (λ () (make-csv-printing-params #:table-cell->string (λ (x) x)
+                                             #:boolean-cell->string (λ (x) x))))
+  (check-exn #px"has no effect"
+             (λ () (make-csv-printing-params #:table-cell->string (λ (x) x)
+                                             #:symbol-cell->string (λ (x) x))))
   )
 
 
